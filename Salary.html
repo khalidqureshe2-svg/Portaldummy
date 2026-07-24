@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Federal Salary Calculator — Budget 2026-27</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── root (theme: deep teal & gold) ── */
+    :root {
+      --green:      #0b4f4a;
+      --green-mid:  #1b6b64;
+      --green-pale: #e4f2f0;
+      --green-mid2: #bcd9d5;
+      --gold:       #c9a84c;
+      --gold-light: #f5e6c0;
+      --gold-pale:  #fffbf0;
+      --white:      #ffffff;
+      --surface:    #f3f7f6;
+      --ink:        #0f2c29;
+      --muted:      #5b7a76;
+      --border:     #c9dbd8;
+      --danger:     #b13e30;
+      --danger-lt:  #fcece9;
+      --mono:       'DM Mono', monospace;
+      --sans:       'Inter', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--sans); background: var(--surface); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: linear-gradient(145deg, var(--green) 0%, var(--green-mid) 100%);
+      border-bottom: 4px solid var(--gold);
+      position: relative; overflow: hidden;
+    }
+    .masthead::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    .masthead-inner {
+      max-width: 520px; margin: 0 auto;
+      padding: 26px 20px 22px; position: relative; z-index: 1;
+    }
+    .masthead-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .masthead-eyebrow::before, .masthead-eyebrow::after {
+      content: ''; flex: 1; height: 1px; background: var(--gold); opacity: 0.35;
+    }
+    .masthead h1 {
+      font-size: 20px; font-weight: 800; color: var(--white);
+      line-height: 1.25; letter-spacing: -0.3px;
+    }
+    .masthead-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 6px; }
+    .masthead-pills { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .pill {
+      font-size: 10px; font-weight: 600; padding: 4px 10px;
+      border-radius: 20px; letter-spacing: 0.5px;
+    }
+    .pill-gold  { background: rgba(201,168,76,0.18); color: var(--gold); border: 1px solid rgba(201,168,76,0.35); }
+    .pill-white { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.15); }
+
+    /* ── PAGE ── */
+    .page { max-width: 520px; margin: 0 auto; padding: 20px 16px 40px; }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(11,79,74,0.08);
+    }
+    .panel-header {
+      background: linear-gradient(145deg, var(--green), var(--green-mid));
+      padding: 10px 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-header span {
+      font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.8);
+      letter-spacing: 1.4px; text-transform: uppercase;
+    }
+    .panel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .panel-body { padding: 18px 16px; }
+
+    /* ── FORM ── */
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; display: block;
+    }
+    .field-hint { font-size: 10px; color: #9bac9b; margin-top: 5px; }
+
+    select, input[type="number"] {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: var(--sans); font-size: 14px; font-weight: 500;
+      color: var(--ink); background: var(--surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none; appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b7a76' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
+    select:focus, input[type="number"]:focus {
+      outline: none; border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(11,79,74,0.12); background: var(--white);
+    }
+
+    .calc-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(145deg, var(--green), var(--green-mid));
+      color: var(--white); border: none; border-radius: 8px;
+      font-family: var(--sans); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.5px; cursor: pointer; margin-top: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 3px 10px rgba(11,79,74,0.25);
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .calc-btn:hover  { opacity: 0.92; }
+    .calc-btn:active { transform: scale(0.99); }
+    .calc-btn svg { transition: transform 0.2s; }
+    .calc-btn:hover svg { transform: translateX(3px); }
+
+    /* ── ERROR ── */
+    .err-box {
+      background: var(--danger-lt); border: 1px solid #f5cdc8;
+      border-radius: 7px; padding: 9px 12px;
+      font-size: 12px; color: var(--danger); margin-top: 10px; display: none;
+    }
+    .err-box.show { display: block; }
+
+    /* ── RESULTS ── */
+    .results { display: none; }
+    .results.show { display: block; animation: fadeUp 0.3s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── HERO CARD (deep teal) ── */
+    .hero-card {
+      background: linear-gradient(145deg, var(--green) 0%, var(--green-mid) 100%);
+      border-radius: 12px; overflow: hidden; margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(11,79,74,0.2);
+      position: relative;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute; top: -50px; right: -50px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .new-basic-section {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: relative; z-index: 1;
+    }
+    .new-basic-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 1.8px;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    }
+    .new-basic-amount {
+      font-family: var(--mono);
+      font-size: 42px; font-weight: 500;
+      color: var(--white); line-height: 1; letter-spacing: -1px;
+    }
+    .new-basic-amount .currency {
+      font-size: 20px; font-weight: 400;
+      color: var(--gold); vertical-align: super;
+      margin-right: 3px; letter-spacing: 0;
+    }
+    .new-basic-tag {
+      display: inline-block; margin-top: 10px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 500;
+    }
+
+    .monthly-section {
+      padding: 14px 20px 18px;
+      position: relative; z-index: 1;
+    }
+    .monthly-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 1.8px;
+      text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 6px;
+    }
+    .monthly-row {
+      display: flex; align-items: baseline; gap: 10px;
+    }
+    .monthly-amount {
+      font-family: var(--mono);
+      font-size: 28px; font-weight: 500;
+      color: var(--gold-light); letter-spacing: -0.5px;
+    }
+    .monthly-amount .currency {
+      font-size: 14px; color: var(--gold); vertical-align: super; margin-right: 2px;
+    }
+    .monthly-sub {
+      font-size: 11px; color: rgba(255,255,255,0.35);
+    }
+
+    /* ── BREAKDOWN ── */
+    .breakdown-panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(11,79,74,0.08);
+    }
+    .breakdown-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 16px; border-bottom: 1px solid var(--green-pale);
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .br-left { display: flex; align-items: center; gap: 10px; }
+    .br-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+      background: var(--green-pale);
+    }
+    .br-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .br-sublabel { font-size: 10px; color: #9bac9b; margin-top: 1px; }
+    .br-value {
+      font-family: var(--mono); font-size: 14px;
+      font-weight: 500; color: var(--green);
+    }
+    .total-row {
+      background: linear-gradient(145deg, var(--green), var(--green-mid));
+      padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .total-label {
+      font-size: 11px; font-weight: 700;
+      color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .total-value {
+      font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--white);
+    }
+
+    .reset-btn {
+      width: 100%; padding: 12px; background: transparent;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: var(--sans); font-size: 12px; font-weight: 600;
+      color: var(--muted); cursor: pointer; letter-spacing: 0.3px;
+      transition: all 0.15s;
+    }
+    .reset-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-pale); }
+
+    .footer {
+      text-align: center; padding: 20px 0 0;
+      font-size: 10px; color: #9bac9b; letter-spacing: 0.3px; line-height: 1.9;
+    }
+
+    /* ── CREATOR BAR (updated) ── */
+    .creator-bar {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding: 18px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .creator-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #9bac9b;
+    }
+    .creator-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.3px;
+      position: relative;
+      display: inline-block;
+    }
+    .creator-name::before,
+    .creator-name::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 28px;
+      height: 1.5px;
+      background: var(--gold);
+      opacity: 0.7;
+    }
+    .creator-name::before { right: calc(100% + 8px); }
+    .creator-name::after  { left:  calc(100% + 8px); }
+    .creator-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--green-pale);
+      padding: 2px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--green-mid2);
+    }
+    .creator-contact {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--green-mid);
+      background: rgba(11,79,74,0.06);
+      padding: 4px 16px;
+      border-radius: 30px;
+      margin-top: 2px;
+      border: 1px solid var(--border);
+    }
+    .creator-badge {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--green-pale);
+      color: var(--green);
+      border: 1px solid var(--green-mid2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-eyebrow">Government of Pakistan</div>
+    <h1>Federal (WAPDA) Salary<br>Increase Calculator</h1>
+    <p class="masthead-sub">Budget 2026-27</p>
+    <div class="masthead-pills">
+      <span class="pill pill-gold">W.E.F. 1 July 2026</span>
+      <span class="pill pill-white">Pay Scale 2026</span>
+      <span class="pill pill-white">BPS 01–22</span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- INPUT -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-dot"></div>
+      <span>Enter Your Details</span>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label class="field-label">BPS Grade</label>
+        <select id="bps" onchange="clearResults()">
+          <option value="">Select your grade</option>
+          <option value="1">BPS-01</option><option value="2">BPS-02</option>
+          <option value="3">BPS-03</option><option value="4">BPS-04</option>
+          <option value="5">BPS-05</option><option value="6">BPS-06</option>
+          <option value="7">BPS-07</option><option value="8">BPS-08</option>
+          <option value="9">BPS-09</option><option value="10">BPS-10</option>
+          <option value="11">BPS-11</option><option value="12">BPS-12</option>
+          <option value="13">BPS-13</option><option value="14">BPS-14</option>
+          <option value="15">BPS-15</option><option value="16">BPS-16</option>
+          <option value="17">BPS-17</option><option value="18">BPS-18</option>
+          <option value="19">BPS-19</option><option value="20">BPS-20</option>
+          <option value="21">BPS-21</option><option value="22">BPS-22</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Current Running Basic Pay</label>
+        <input type="number" id="basic" placeholder="e.g. 32640" oninput="clearResults()">
+        <p class="field-hint">Your basic pay as on 30.06.2026 · before merger</p>
+      </div>
+      <div class="err-box" id="err">Please select a BPS grade and enter your basic pay.</div>
+      <button class="calc-btn" onclick="calc()">
+        Calculate Increase
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+
+    <div class="hero-card">
+      <div class="new-basic-section">
+        <div class="new-basic-eyebrow">New Basic Pay</div>
+        <div class="new-basic-amount">
+          <span class="currency">Rs.</span><span id="heroBasic">0</span>
+        </div>
+        <span class="new-basic-tag">Effective 1st July 2026</span>
+      </div>
+      <div class="monthly-section">
+        <div class="monthly-label">Monthly Increase in Hand</div>
+        <div class="monthly-row">
+          <div class="monthly-amount">
+            <span class="currency">Rs.</span><span id="heroAmt">0</span>
+          </div>
+          <div class="monthly-sub">new money / month</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="breakdown-panel">
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-icon">📈</div>
+          <div>
+            <div class="br-label">7% ARA 2026</div>
+            <div class="br-sublabel">On new merged basic pay</div>
+          </div>
+        </div>
+        <div class="br-value" id="ara">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-icon">⚖️</div>
+          <div>
+            <div class="br-label">15% DRA 2026</div>
+            <div class="br-sublabel">On initial basic as on 30.06.2022</div>
+          </div>
+        </div>
+        <div class="br-value" id="dra">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-icon">🚌</div>
+          <div>
+            <div class="br-label">50% Conveyance Extra</div>
+            <div class="br-sublabel">On existing conveyance allowance</div>
+          </div>
+        </div>
+        <div class="br-value" id="conv">—</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-icon">💰</div>
+          <div>
+            <div class="br-label">10% ARA 2024</div>
+            <div class="br-sublabel">Difference on revised basic pay</div>
+          </div>
+        </div>
+        <div class="br-value" id="ara2024">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-icon">🏢</div>
+          <div>
+            <div class="br-label">Head Office Allowance (WAPDA) 20%</div>
+            <div class="br-sublabel">Difference on revised basic pay</div>
+          </div>
+        </div>
+        <div class="br-value" id="hoa">—</div>
+      </div>
+
+      <div class="total-row">
+        <span class="total-label">Total Monthly Jump</span>
+        <span class="total-value" id="total">—</span>
+      </div>
+    </div>
+
+    <button class="reset-btn" onclick="reset()">↺ &nbsp;Calculate for Another Employee</button>
+  </div>
+
+  <div class="footer">
+    Finance Division · Government of Pakistan · Budget 2026-27<br>
+    Relief Measures for Federal Govt Employees
+  </div>
+
+  <!-- ─── UPDATED CREATOR BAR ─── -->
+  <div class="creator-bar">
+    <span class="creator-label">Created by</span>
+    <span class="creator-name">M. Khalid Abbas</span>
+    <span class="creator-title">IT Assistant</span>
+    <span class="creator-title">O/o G.M (Projects) South WAPDA Hyderabad</span>
+    <span class="creator-contact">📱 0334-7311558</span>
+    <span class="creator-badge">Budget 2026-27 · Salary Calculator</span>
+  </div>
+
+</div>
+
+<script>
+  const scale2022 = {
+    1:[13550,430],2:[13820,490],3:[14260,580],4:[14690,660],5:[15230,750],
+    6:[15760,840],7:[16310,910],8:[16890,1000],9:[17470,1090],10:[18050,1190],
+    11:[18650,1310],12:[19770,1430],13:[21160,1560],14:[22530,1740],15:[23920,1980],
+    16:[28070,2260],17:[45070,3420],18:[56880,4260],19:[87840,4530],20:[102470,6690],
+    21:[113790,7420],22:[122190,8710]
+  };
+  const scale2026 = {
+    1:[16280,520],2:[16600,590],3:[17130,700],4:[17650,800],5:[18300,910],
+    6:[18930,1010],7:[19590,1100],8:[20290,1210],9:[20990,1310],10:[21680,1430],
+    11:[22410,1580],12:[23750,1720],13:[25420,1880],14:[27060,2090],15:[28730,2380],
+    16:[33720,2720],17:[54140,4110],18:[68330,5120],19:[105510,5450],20:[123090,8040],
+    21:[136680,8920],22:[146770,10470]
+  };
+  const init2022 = {
+    1:13550,2:13820,3:14260,4:14690,5:15230,6:15760,7:16310,8:16890,
+    9:17470,10:18050,11:18650,12:19770,13:21160,14:22530,15:23920,
+    16:28070,17:45070,18:56880,19:87840,20:102470,21:113790,22:122190
+  };
+  const conv2022 = {
+    1:1785,2:1785,3:1785,4:1785,5:1932,6:1932,7:1932,8:1932,9:1932,10:1932,
+    11:2856,12:2856,13:2856,14:2856,15:2856,
+    16:5000,17:5000,18:5000,19:5000,20:5000,21:5000,22:5000
+  };
+
+  const fmt = n => Math.round(n).toLocaleString('en-PK');
+
+  function animateCount(el, target) {
+    const steps = 30, dur = 500;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      el.textContent = fmt(Math.round(target * step / steps));
+      if (step >= steps) { el.textContent = fmt(target); clearInterval(timer); }
+    }, dur / steps);
+  }
+
+  function calc() {
+    const bps   = parseInt(document.getElementById('bps').value);
+    const basic = parseFloat(document.getElementById('basic').value);
+    if (!bps || !basic || basic <= 0) {
+      document.getElementById('err').classList.add('show'); return;
+    }
+    document.getElementById('err').classList.remove('show');
+
+    const [min22, inc22] = scale2022[bps];
+    const [min26, inc26] = scale2026[bps];
+    const stage    = Math.round((basic - min22) / inc22);
+    const newBasic = Math.min(min26 + stage * inc26, min26 + 30 * inc26);
+
+    const ara = Math.round(newBasic * 0.07);
+    const dra = Math.round(init2022[bps] * 0.15);
+    const conv = Math.round(conv2022[bps] * 0.50);
+
+    const oldAra2024 = basic * 0.10;
+    const newAra2024 = newBasic * 0.10;
+    const ara2024 = Math.round(newAra2024 - oldAra2024);
+
+    const oldHOA = basic * 0.20;
+    const newHOA = newBasic * 0.20;
+    const hoa = oldHOA >= 20000 ? 0 : Math.round(newHOA - oldHOA);
+
+    const total = ara + dra + conv + ara2024 + hoa;
+
+    animateCount(document.getElementById('heroBasic'), newBasic);
+    animateCount(document.getElementById('heroAmt'), total);
+
+    document.getElementById('ara').textContent      = 'Rs. ' + fmt(ara);
+    document.getElementById('dra').textContent      = 'Rs. ' + fmt(dra);
+    document.getElementById('conv').textContent     = 'Rs. ' + fmt(conv);
+    document.getElementById('ara2024').textContent  = 'Rs. ' + fmt(ara2024);
+    document.getElementById('hoa').textContent      = 'Rs. ' + fmt(hoa);
+    document.getElementById('total').textContent    = 'Rs. ' + fmt(total);
+
+    document.getElementById('results').classList.add('show');
+    setTimeout(() => document.getElementById('results').scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+
+  function clearResults() {
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('err').classList.remove('show');
+  }
+
+  function reset() {
+    document.getElementById('bps').value = '';
+    document.getElementById('basic').value = '';
+    clearResults();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
